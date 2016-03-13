@@ -5,7 +5,7 @@ import table, ball, bat
 
 # 전역변수 선언
 x_velocity = 10
-y_velocity = 10
+y_velocity = 0
 score_left = 0
 score_right = 0
 first_serve = True
@@ -27,13 +27,13 @@ bat_R = bat.Bat(table=my_table, width=15, height=100, x_posn=575, y_posn=150, co
 
 # 함수
 def game_flow():
-	global first_serve
-	global score_left
-	global score_right
+    global first_serve
+    global score_left
+    global score_right
 	# 첫번째 서브를 기다립니다
-	if (first_serve == True):
-		my_ball.stop_ball()
-		first_serve = False
+    if (first_serve == True):
+	    my_ball.stop_ball()
+	    first_serve = False
 
     # 공이 배트에 충돌했는지 감지합니다
     bat_L.detect_collision(my_ball)
@@ -72,14 +72,31 @@ def game_flow():
     my_ball.move_next()
     window.after(50, game_flow)
 
+
+def restart_game(master):
+    global score_left
+    global score_right
+    my_ball.start_ball(x_speed=x_velocity, y_speed=0)
+    if (score_left=="W" or score_left=="L"):
+        score_left = 0
+        score_right = 0
+    my_table.draw_score(score_left, score_right)
+
+
+
 # 배트를 제어하기 위해 키보드의 키에 연결
 window.bind("a", bat_L.move_up)
 window.bind("z", bat_L.move_down)
 window.bind("<Up>", bat_R.move_up)
 window.bind("<Down>", bat_R.move_down)
 
+
+# 스페이스 바를 눌렀을 때 게임을 재시작하도록 연결합니다.
+window.bind("<space>", restart_game)
+
+
 # game_flow 반복문 호출
 game_flow()
 
-# GUI를 계속 그리는 반복문 시작
+# GUI를 계속 그리는 반복문 시작 (tkenter 반복문 프로세스)
 window.mainloop()
