@@ -6,6 +6,9 @@ import table, ball, bat
 # 전역변수 선언
 x_velocity = 10
 y_velocity = 10
+score_left = 0
+score_right = 0
+first_serve = True
 
 # tkinter 공장으로부터 윈도우 주문
 window = Tk()
@@ -24,9 +27,47 @@ bat_R = bat.Bat(table=my_table, width=15, height=100, x_posn=575, y_posn=150, co
 
 # 함수
 def game_flow():
-    # 공이 배트에 닿으면
+	global first_serve
+	global score_left
+	global score_right
+	# 첫번째 서브를 기다립니다
+	if (first_serve == True):
+		my_ball.stop_ball()
+		first_serve = False
+
+    # 공이 배트에 충돌했는지 감지합니다
     bat_L.detect_collision(my_ball)
     bat_R.detect_collision(my_ball)
+
+    # 공이 왼쪽 벽에 충돌했는지 감지합니다
+    if (my_ball.x_posn <= 3):
+    	my_ball.stop_ball()
+    	my_ball.start_position()
+    	bat_L.start_position()
+    	bat_R.start_position()
+    	my_table.move_item(bat_L.rectangle, 20, 150, 35, 250)
+    	my_table.move_item(bat_R.rectangle, 575, 150, 590, 250)
+    	score_left = score_left + 1
+    	if (score_left >= 10):
+    		score_left = "W"
+    		score_right = "L"
+    	first_serve = True
+    	my_table.draw_score(score_left, score_right)
+
+    # 공이 오른쪽 벽에 충돌했는지 감지합니다
+    if (my_ball.x_posn + my_ball.width >= my_table.width-3):
+    	my_ball.stop_ball()
+    	my_ball.start_position()
+    	bat_L.start_position()
+    	bat_R.start_position()
+    	my_table.move_item(bat_L.rectangle, 20, 150, 35, 250)
+    	my_table.move_item(bat_R.rectangle, 575, 150, 590, 250)
+    	score_right = score_right + 1
+    	if (score_right >= 10):
+    		score_right = "W"
+    		score_left = "L"
+    	first_serve = True
+    	my_table.draw_score(score_left, score_right)
 
     my_ball.move_next()
     window.after(50, game_flow)
